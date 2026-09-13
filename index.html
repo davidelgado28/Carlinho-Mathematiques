@@ -15,24 +15,22 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            background-color: #050507;
-            color: #ffffff;
+            background-color: #121412;
+            color: #e0e0e0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         header {
             padding: 20px;
-            background-color: #0a0a0f;
-            border-bottom: 2px solid #00f0ff;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            background-color: #1a1e1a;
+            border-bottom: 2px solid #2e7d32;
             text-align: center;
         }
         h1 {
-            color: #ffffff;
-            text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
-            font-size: 2.2rem;
-            letter-spacing: 2px;
+            color: #4caf50;
+            font-size: 2rem;
+            letter-spacing: 1px;
         }
         nav {
             display: flex;
@@ -40,22 +38,20 @@
             flex-wrap: wrap;
             gap: 10px;
             padding: 15px;
-            background-color: #111118;
+            background-color: #161a16;
         }
         nav button {
-            padding: 10px 20px;
-            background-color: #1a1a24;
-            color: #00f0ff;
-            border: 1px solid #00f0ff;
-            border-radius: 5px;
+            padding: 10px 18px;
+            background-color: #1f261f;
+            color: #a5d6a7;
+            border: 1px solid #2e7d32;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-weight: 600;
         }
         nav button.active {
-            background-color: #00f0ff;
-            color: #000000;
-            box-shadow: 0 0 10px #00f0ff;
+            background-color: #2e7d32;
+            color: #ffffff;
         }
         main {
             flex: 1;
@@ -67,28 +63,35 @@
             display: none;
             width: 100%;
             max-width: 1100px;
-            background-color: #0d0d14;
-            border-radius: 10px;
+            background-color: #181c18;
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 0 20px rgba(176, 38, 255, 0.1);
-            border: 1px solid #2a2a35;
+            border: 1px solid #2e7d32;
         }
         .module.active {
             display: block;
         }
         input, select {
             padding: 10px;
-            background-color: #1a1a24;
+            background-color: #121412;
             color: #ffffff;
-            border: 1px solid #00f0ff;
+            border: 1px solid #388e3c;
             border-radius: 4px;
             outline: none;
         }
         canvas {
             width: 100% !important;
             height: 380px !important;
-            background-color: #050507;
-            border-radius: 8px;
+            background-color: #0d0f0d;
+            border-radius: 6px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a5d6a7;
         }
     </style>
 </head>
@@ -99,6 +102,7 @@
 
     <nav>
         <button onclick="switchModule('functions')" id="btn-functions" class="active">Funções</button>
+        <button onclick="switchModule('geometry2d')" id="btn-geometry2d">Geometria 2D</button>
         <button onclick="switchModule('geometry')" id="btn-geometry">Geometria 3D</button>
         <button onclick="switchModule('hypercube')" id="btn-hypercube">Simulador 4D</button>
         <button onclick="switchModule('calculus')" id="btn-calculus">Cálculo</button>
@@ -107,71 +111,102 @@
 
     <main>
         <div id="functions" class="module active">
-            <h2 style="color: #39ff14; margin-bottom: 15px;">Plotagem Polinomial</h2>
-            <p style="color: #aaa; margin-bottom: 15px;">Digite a função f(x) utilizando a sintaxe do Math.js (ex: x^3 - 2*x + 1):</p>
-            <div style="margin-bottom: 15px;">
-                <input type="text" id="funcInput" value="x^3 - 4*x" style="width: 100%; font-size: 1.1rem;" oninput="updateFunctionPlot()">
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Plotagem de Funções</h2>
+            <div class="control-group">
+                <label>Tipo de Função:</label>
+                <select id="funcType" onchange="updateFunctionInputs()">
+                    <option value="deg1">1º Grau (f(x) = ax + b)</option>
+                    <option value="deg2">2º Grau (f(x) = ax² + bx + c)</option>
+                    <option value="deg3">3º Grau (f(x) = ax³ + bx² + cx + d)</option>
+                    <option value="deg4">4º Grau</option>
+                    <option value="deg5">5º Grau</option>
+                    <option value="log">Logarítmica (f(x) = a * log(x) + b)</option>
+                    <option value="exp">Exponencial (f(x) = a * b^x + c)</option>
+                </select>
             </div>
+            <div id="funcInputsContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;"></div>
             <canvas id="functionCanvas"></canvas>
         </div>
 
+        <div id="geometry2d" class="module">
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Módulo de Geometria 2D</h2>
+            <div class="control-group">
+                <label>Escolha a Figura 2D:</label>
+                <select id="shape2dType" onchange="updateGeometry2D()">
+                    <option value="rectangle">Retângulo</option>
+                    <option value="circle">Círculo</option>
+                    <option value="triangle">Triângulo Retângulo</option>
+                </select>
+            </div>
+            <div id="shape2dInputs" style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;"></div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <canvas id="canvas2d" style="height: 300px !important;"></canvas>
+                </div>
+                <div style="flex: 1; background-color: #121412; padding: 20px; border-radius: 6px; border: 1px solid #2e7d32;">
+                    <p id="result2dArea" style="font-size: 1.1rem; margin-bottom: 10px; color: #a5d6a7;">Área: </p>
+                    <p id="result2dPerim" style="font-size: 1.1rem; color: #a5d6a7;">Perímetro: </p>
+                </div>
+            </div>
+        </div>
+
         <div id="geometry" class="module">
-            <h2 style="color: #b026ff; margin-bottom: 15px;">Laboratório Geométrico 3D</h2>
-            <div style="margin-bottom: 15px;">
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Laboratório Geométrico 3D</h2>
+            <div class="control-group">
                 <select id="geometryShape" onchange="changeGeometryShape()">
                     <option value="cube">Cubo</option>
                     <option value="sphere">Esfera</option>
                     <option value="pyramid">Pirâmide</option>
                 </select>
             </div>
-            <div id="geometryContainer" style="width: 100%; height: 380px; border-radius: 8px; overflow: hidden;"></div>
+            <div id="geometryContainer" style="width: 100%; height: 380px; border-radius: 6px; overflow: hidden;"></div>
         </div>
 
         <div id="hypercube" class="module">
-            <h2 style="color: #00f0ff; margin-bottom: 15px;">Projeção Hiperespacial 4D (Tesserato)</h2>
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Projeção Hiperespacial 4D (Tesserato)</h2>
             <div style="display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap;">
                 <div>
-                    <label style="display: block; margin-bottom: 5px;">Rotação XW</label>
-                    <input type="range" id="rotXW" min="0" max="6.28" step="0.01" value="0" style="accent-color: #00f0ff;">
+                    <label>Rotação XW</label>
+                    <input type="range" id="rotXW" min="0" max="6.28" step="0.01" value="0" style="accent-color: #2e7d32;">
                 </div>
                 <div>
-                    <label style="display: block; margin-bottom: 5px;">Rotação YW</label>
-                    <input type="range" id="rotYW" min="0" max="6.28" step="0.01" value="0" style="accent-color: #00f0ff;">
+                    <label>Rotação YW</label>
+                    <input type="range" id="rotYW" min="0" max="6.28" step="0.01" value="0" style="accent-color: #2e7d32;">
                 </div>
             </div>
-            <div id="hypercubeContainer" style="width: 100%; height: 380px; border-radius: 8px; overflow: hidden;"></div>
+            <div id="hypercubeContainer" style="width: 100%; height: 380px; border-radius: 6px; overflow: hidden;"></div>
         </div>
 
         <div id="calculus" class="module">
-            <h2 style="color: #ff2a2a; margin-bottom: 15px;">Motor de Derivadas e Integrais</h2>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px;">Função f(x):</label>
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Motor de Derivadas e Integrais</h2>
+            <div class="control-group">
+                <label>Função f(x):</label>
                 <input type="text" id="calcInput" value="x^2" style="width: 100%; font-size: 1.1rem;" oninput="runCalculus()">
             </div>
             <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                 <div>
-                    <label style="display: block; color: #aaa; font-size: 0.9rem;">Limite a:</label>
+                    <label style="color: #aaa; font-size: 0.9rem;">Limite a:</label>
                     <input type="number" id="limitA" value="0" oninput="runCalculus()" style="width: 100px;">
                 </div>
                 <div>
-                    <label style="display: block; color: #aaa; font-size: 0.9rem;">Limite b:</label>
+                    <label style="color: #aaa; font-size: 0.9rem;">Limite b:</label>
                     <input type="number" id="limitB" value="1" oninput="runCalculus()" style="width: 100px;">
                 </div>
             </div>
-            <div style="background-color: #1a1a24; padding: 20px; border-radius: 8px; border-left: 4px solid #ff2a2a;">
+            <div style="background-color: #121412; padding: 20px; border-radius: 6px; border-left: 4px solid #2e7d32;">
                 <p id="derivResult" style="font-size: 1.1rem; margin-bottom: 10px;">Derivada f'(x): </p>
                 <p id="integResult" style="font-size: 1.1rem;">Integral Definida: </p>
             </div>
         </div>
 
         <div id="stats" class="module">
-            <h2 style="color: #ffff00; margin-bottom: 15px;">Simulador de Dados</h2>
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Simulador de Dados</h2>
             <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
                 <div>
-                    <label style="display: block; margin-bottom: 5px;">Quantidade de Lançamentos:</label>
+                    <label>Quantidade de Lançamentos:</label>
                     <input type="number" id="rollCount" value="100" style="width: 120px;">
                 </div>
-                <button onclick="runStats()" style="padding: 10px 20px; background-color: #ffff00; color: #000; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; height: 42px; margin-top: 22px;">Simular</button>
+                <button onclick="runStats()" style="padding: 10px 20px; background-color: #2e7d32; color: #fff; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; height: 42px; margin-top: 22px;">Simular</button>
             </div>
             <canvas id="statsCanvas"></canvas>
         </div>
@@ -205,21 +240,69 @@
             const ctx = document.getElementById('functionCanvas').getContext('2d');
             functionChart = new Chart(ctx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'f(x)', data: [], borderColor: '#39ff14', borderWidth: 2, pointRadius: 0 }] },
+                data: { labels: [], datasets: [{ label: 'f(x)', data: [], borderColor: '#4caf50', borderWidth: 2, pointRadius: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#222' } }, y: { grid: { color: '#222' } } } }
             });
+            updateFunctionInputs();
+        }
+
+        function updateFunctionInputs() {
+            const type = document.getElementById('funcType').value;
+            const container = document.getElementById('funcInputsContainer');
+            container.innerHTML = '';
+            
+            let fields = [];
+            if (type === 'deg1') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 0 }];
+            else if (type === 'deg2') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 0 }, { id: 'fc', label: 'c', val: 0 }];
+            else if (type === 'deg3') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 0 }, { id: 'fc', label: 'c', val: 0 }, { id: 'fd', label: 'd', val: 0 }];
+            else if (type === 'deg4') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 0 }, { id: 'fc', label: 'c', val: 0 }, { id: 'fd', label: 'd', val: 0 }, { id: 'fe', label: 'e', val: 0 }];
+            else if (type === 'deg5') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 0 }, { id: 'fc', label: 'c', val: 0 }, { id: 'fd', label: 'd', val: 0 }, { id: 'fe', label: 'e', val: 0 }, { id: 'ff', label: 'f', val: 0 }];
+            else if (type === 'log') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 0 }];
+            else if (type === 'exp') fields = [{ id: 'fa', label: 'a', val: 1 }, { id: 'fb', label: 'b', val: 2 }, { id: 'fc', label: 'c', val: 0 }];
+
+            for (let i = 0; i < fields.length; i = i + 1) {
+                const item = fields[i];
+                const div = document.createElement('div');
+                div.innerHTML = '<label>' + item.label + '</label><input type="number" id="' + item.id + '" value="' + item.val + '" oninput="updateFunctionPlot()" style="width: 80px;">';
+                container.appendChild(div);
+            }
             updateFunctionPlot();
         }
 
         function updateFunctionPlot() {
-            const expr = document.getElementById('funcInput').value;
+            const type = document.getElementById('funcType').value;
             const labels = [];
             const data = [];
             try {
-                const compiled = math.compile(expr);
+                const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+                let f = (x) => x;
+
+                if (type === 'deg1') {
+                    const a = getVal('fa'), b = getVal('fb');
+                    f = (x) => a * x + b;
+                } else if (type === 'deg2') {
+                    const a = getVal('fa'), b = getVal('fb'), c = getVal('fc');
+                    f = (x) => a * Math.pow(x, 2) + b * x + c;
+                } else if (type === 'deg3') {
+                    const a = getVal('fa'), b = getVal('fb'), c = getVal('fc'), d = getVal('fd');
+                    f = (x) => a * Math.pow(x, 3) + b * Math.pow(x, 2) + c * x + d;
+                } else if (type === 'deg4') {
+                    const a = getVal('fa'), b = getVal('fb'), c = getVal('fc'), d = getVal('fd'), e = getVal('fe');
+                    f = (x) => a * Math.pow(x, 4) + b * Math.pow(x, 3) + c * Math.pow(x, 2) + d * x + e;
+                } else if (type === 'deg5') {
+                    const a = getVal('fa'), b = getVal('fb'), c = getVal('fc'), d = getVal('fd'), e = getVal('fe'), green = getVal('ff');
+                    f = (x) => a * Math.pow(x, 5) + b * Math.pow(x, 4) + c * Math.pow(x, 3) + d * Math.pow(x, 2) + e * x + green;
+                } else if (type === 'log') {
+                    const a = getVal('fa'), b = getVal('fb');
+                    f = (x) => x > 0 ? a * Math.log(x) + b : NaN;
+                } else if (type === 'exp') {
+                    const a = getVal('fa'), b = getVal('fb'), c = getVal('fc');
+                    f = (x) => a * Math.pow(b, x) + c;
+                }
+
                 for (let x = -10; x <= 10; x = x + 0.5) {
                     labels.push(x.toFixed(1));
-                    data.push(compiled.evaluate({ x }));
+                    data.push(f(x));
                 }
                 functionChart.data.labels = labels;
                 functionChart.data.datasets[0].data = data;
@@ -233,7 +316,7 @@
             const width = container.clientWidth;
             const height = 380;
             geomScene = new THREE.Scene();
-            geomScene.background = new THREE.Color('#050507');
+            geomScene.background = new THREE.Color('#0d0f0d');
             const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
             camera.position.z = 4;
             geomRenderer = new THREE.WebGLRenderer({ antialias: true });
@@ -250,7 +333,7 @@
             if (type === 'cube') geom = new THREE.BoxGeometry(2, 2, 2);
             else if (type === 'sphere') geom = new THREE.SphereGeometry(1.5, 32, 32);
             else geom = new THREE.ConeGeometry(1.5, 2.5, 4);
-            const mat = new THREE.MeshPhongMaterial({ color: 0xb026ff, wireframe: true });
+            const mat = new THREE.MeshPhongMaterial({ color: 0x388e3c, wireframe: true });
             geomMesh = new THREE.Mesh(geom, mat);
             geomScene.add(geomMesh);
         }
@@ -267,7 +350,7 @@
                 geomMesh.rotation.y = geomMesh.rotation.y + 0.01;
             }
             if (geomRenderer && geomScene) {
-                geomRenderer.render(geomScene, document.querySelector('#geometryContainer canvas') ? geomRenderer.domElement : geomRenderer.domElement);
+                geomRenderer.render(geomScene, geomRenderer.domElement);
             }
         }
 
@@ -277,7 +360,7 @@
             const width = container.clientWidth;
             const height = 380;
             hyperScene = new THREE.Scene();
-            hyperScene.background = new THREE.Color('#050507');
+            hyperScene.background = new THREE.Color('#0d0f0d');
             const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
             camera.position.z = 3.5;
             hyperRenderer = new THREE.WebGLRenderer({ antialias: true });
@@ -302,7 +385,7 @@
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(edges.length * 6);
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            const material = new THREE.LineBasicMaterial({ color: 0x00f0ff });
+            const material = new THREE.LineBasicMaterial({ color: 0x4caf50 });
             hyperLines = new THREE.LineSegments(geometry, material);
             hyperScene.add(hyperLines);
 
@@ -372,7 +455,7 @@
             const ctx = document.getElementById('statsCanvas').getContext('2d');
             statsChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: ['Face 1', 'Face 2', 'Face 3', 'Face 4', 'Face 5', 'Face 6'], datasets: [{ label: 'Frequência', data: [0,0,0,0,0,0], backgroundColor: '#ffff00' }] },
+                data: { labels: ['Face 1', 'Face 2', 'Face 3', 'Face 4', 'Face 5', 'Face 6'], datasets: [{ label: 'Frequência', data: [0,0,0,0,0,0], backgroundColor: '#388e3c' }] },
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#222' } }, y: { grid: { color: '#222' } } } }
             });
             runStats();
@@ -389,8 +472,75 @@
             statsChart.update();
         }
 
+        function updateGeometry2D() {
+            const type = document.getElementById('shape2dType').value;
+            const container = document.getElementById('shape2dInputs');
+            container.innerHTML = '';
+            
+            let fields = [];
+            if (type === 'rectangle') fields = [{ id: 'dimL', label: 'Largura', val: 5 }, { id: 'dimA', label: 'Altura', val: 3 }];
+            else if (type === 'circle') fields = [{ id: 'dimR', label: 'Raio', val: 4 }];
+            else if (type === 'triangle') fields = [{ id: 'dimB', label: 'Base', val: 4 }, { id: 'dimH', label: 'Altura', val: 3 }];
+
+            for (let i = 0; i < fields.length; i = i + 1) {
+                const item = fields[i];
+                const div = document.createElement('div');
+                div.innerHTML = '<label>' + item.label + '</label><input type="number" id="' + item.id + '" value="' + item.val + '" oninput="drawGeometry2D()" style="width: 100px;">';
+                container.appendChild(div);
+            }
+            drawGeometry2D();
+        }
+
+        function drawGeometry2D() {
+            const type = document.getElementById('shape2dType').value;
+            const canvas = document.getElementById('canvas2d');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const getVal = (id) => parseFloat(document.getElementById(id).value) || 1;
+            let area = 0, perim = 0;
+
+            ctx.fillStyle = '#181c18';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#4caf50';
+            ctx.lineWidth = 2;
+
+            if (type === 'rectangle') {
+                const l = getVal('dimL');
+                const a = getVal('dimA');
+                area = l * a;
+                perim = 2 * (l + a);
+                ctx.strokeRect(canvas.width / 2 - l * 10, canvas.height / 2 - a * 10, l * 20, a * 20);
+            } else if (type === 'circle') {
+                const r = getVal('dimR');
+                area = Math.PI * Math.pow(r, 2);
+                perim = 2 * Math.PI * r;
+                ctx.beginPath();
+                ctx.arc(canvas.width / 2, canvas.height / 2, r * 15, 0, 2 * Math.PI);
+                ctx.stroke();
+            } else if (type === 'triangle') {
+                const b = getVal('dimB');
+                const h = getVal('dimH');
+                area = (b * h) / 2;
+                const hyp = Math.sqrt(Math.pow(b, 2) + Math.pow(h, 2));
+                perim = b + h + hyp;
+                ctx.beginPath();
+                const startX = canvas.width / 2 - (b * 10) / 2;
+                const startY = canvas.height / 2 + (h * 10) / 2;
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX + b * 20, startY);
+                ctx.lineTo(startX, startY - h * 20);
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            document.getElementById('result2dArea').innerText = "Área: " + area.toFixed(2);
+            document.getElementById('result2dPerim').innerText = "Perímetro / Circunferência: " + perim.toFixed(2);
+        }
+
         window.onload = function() {
             initFunctionPlot();
+            updateGeometry2D();
             initGeometry();
             initHypercube();
             runCalculus();

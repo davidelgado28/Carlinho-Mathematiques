@@ -99,11 +99,32 @@
             color: #81c784;
             margin-bottom: 10px;
         }
+        @media (max-width: 600px) {
+            nav {
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+            nav button {
+                flex: 0 0 auto;
+                white-space: nowrap;
+            }
+            main {
+                padding: 12px;
+            }
+            .module {
+                padding: 18px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>CARLINHO MATHÉMATIQUES</h1>
+        <button onclick="window.location.href='index.html'" style="margin-top: 12px; padding: 10px 18px; background-color: #2e7d32; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Voltar para o início</button>
     </header>
 
     <nav>
@@ -111,8 +132,11 @@
         <button onclick="switchModule('geometry2d')" id="btn-geometry2d">Geometria 2D</button>
         <button onclick="switchModule('geometry')" id="btn-geometry">Geometria 3D</button>
         <button onclick="switchModule('hypercube')" id="btn-hypercube">Simulador 4D</button>
+        <button onclick="switchModule('trigonometry')" id="btn-trigonometry">Trigonometria</button>
         <button onclick="switchModule('calculus')" id="btn-calculus">Cálculo</button>
         <button onclick="switchModule('stats')" id="btn-stats">Probabilidade</button>
+        <button onclick="switchModule('numberTheory')" id="btn-numberTheory">Teoria dos Números</button>
+        <button onclick="switchModule('matrix')" id="btn-matrix">Matriz</button>
     </nav>
 
     <main>
@@ -139,9 +163,11 @@
             <div class="control-group">
                 <label>Escolha a Figura 2D:</label>
                 <select id="shape2dType" onchange="updateGeometry2D()">
-                    <option value="rectangle">Retângulo</option>
+                    <option value="rectangle">Retângulo/Quadrado</option>
                     <option value="circle">Círculo</option>
                     <option value="triangle">Triângulo Retângulo</option>
+                    <option value="trapezoid">Trapézio</option>
+                    <option value="rhombus">Losango</option>
                 </select>
             </div>
             <div id="shape2dInputs" style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;"></div>
@@ -164,6 +190,8 @@
                     <option value="cube">Cubo</option>
                     <option value="sphere">Esfera</option>
                     <option value="pyramid">Pirâmide</option>
+                    <option value="cone">Cone</option>
+                    <option value="cylinder">Cilindro</option>
                 </select>
             </div>
             <div id="geometryContainer" style="width: 100%; height: 380px; border-radius: 6px; overflow: hidden; cursor: grab;"></div>
@@ -183,6 +211,30 @@
                 </div>
             </div>
             <div id="hypercubeContainer" style="width: 100%; height: 380px; border-radius: 6px; overflow: hidden; cursor: grab;"></div>
+        </div>
+
+        <div id="trigonometry" class="module">
+            <h2 style="color: #4caf50; margin-bottom: 10px;">Círculo Trigonométrico</h2>
+            <p class="instruction-tag">Arraste o ponto no círculo ou use o controle para alterar o ângulo.</p>
+            <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap; margin-bottom: 15px;">
+                <div>
+                    <label>Ângulo (graus)</label>
+                    <input type="number" id="trigAngle" min="0" max="360" step="1" value="45" oninput="updateTrigonometry()" style="width: 110px;">
+                </div>
+                <div style="flex: 1; min-width: 220px;">
+                    <label>Ângulo: <span id="trigAngleValue">45°</span></label>
+                    <input type="range" id="trigAngleRange" min="0" max="360" step="1" value="45" oninput="updateTrigonometryFromRange()" style="width: 100%; accent-color: #2e7d32;">
+                </div>
+            </div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                <canvas id="trigCanvas" style="height: 380px !important; flex: 1; min-width: 300px;"></canvas>
+                <div style="background-color: #121412; padding: 20px; border-radius: 6px; border: 1px solid #2e7d32; min-width: 220px; line-height: 2;">
+                    <p id="trigRadians">Radianos: </p>
+                    <p id="trigSin">sen(θ): </p>
+                    <p id="trigCos">cos(θ): </p>
+                    <p id="trigTan">tan(θ): </p>
+                </div>
+            </div>
         </div>
 
         <div id="calculus" class="module">
@@ -218,8 +270,51 @@
             </div>
             <canvas id="statsCanvas"></canvas>
         </div>
+
+        <div id="numberTheory" class="module">
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Teoria dos Números</h2>
+            <div class="control-group">
+                <label>Escolha a operação:</label>
+                <select id="numberTheoryType" onchange="updateNumberTheoryInputs()">
+                    <option value="fibonacci">Fibonacci</option>
+                    <option value="mmc">MMC</option>
+                    <option value="mdc">MDC</option>
+                    <option value="primes">Números Primos</option>
+                </select>
+            </div>
+            <div id="numberTheoryInputs" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;"></div>
+            <button onclick="calculateNumberTheory()" style="padding: 10px 20px; background-color: #2e7d32; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Calcular</button>
+            <pre id="numberTheoryResult" style="margin-top: 20px; color: #a5d6a7; white-space: pre-wrap; font-size: 1.2rem; line-height: 1.6;"></pre>
+        </div>
+
+        <div id="matrix" class="module">
+            <h2 style="color: #4caf50; margin-bottom: 15px;">Visualizador e Operações de Matrizes</h2>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end; margin-bottom: 15px;">
+                <div><label>Linhas de A</label><input type="number" id="matrixRows" min="1" max="6" value="2" onchange="buildMatrixInputs()"></div>
+                <div><label>Colunas de A</label><input type="number" id="matrixCols" min="1" max="6" value="2" onchange="buildMatrixInputs()"></div>
+                <button onclick="showMatrix()" style="padding: 10px 20px; background-color: #2e7d32; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Visualizar matriz</button>
+            </div>
+            <div id="matrixInputs" style="display: grid; gap: 8px; margin-bottom: 20px;"></div>
+            <label>Operação</label>
+            <select id="matrixOperation" onchange="updateSecondMatrix()">
+                <option value="none">Somente visualizar A</option>
+                <option value="add">A + B</option>
+                <option value="subtract">A − B</option>
+                <option value="multiply">A × B</option>
+                <option value="transpose">Transposta de A</option>
+            </select>
+            <div id="secondMatrixSize" style="display: none; gap: 15px; margin-top: 15px; align-items: end;">
+                <div><label>Linhas de B</label><input type="number" id="matrixBRows" min="1" max="6" value="2" onchange="updateSecondMatrix()"></div>
+                <div><label>Colunas de B</label><input type="number" id="matrixBCols" min="1" max="6" value="2" onchange="updateSecondMatrix()"></div>
+            </div>
+            <div id="secondMatrixInputs" style="display: none; gap: 8px; margin-top: 15px;"></div>
+            <button onclick="calculateMatrixOperation()" style="margin-top: 15px; padding: 10px 20px; background-color: #2e7d32; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Calcular</button>
+            <pre id="matrixResult" style="margin-top: 20px; color: #a5d6a7; white-space: pre-wrap; font-size: 1.35rem; line-height: 1.6;"></pre>
+        </div>
     </main>
 
+
+    
     <div vw class="enabled" style="position: fixed; right: 10px; top: 50%; z-index: 9999;">
         <div vw-access-button class="active"></div>
         <div vw-plugin-wrapper>
@@ -248,6 +343,8 @@
                 resizeHypercube();
             } else if (id === 'geometry2d') {
                 drawGeometry2D();
+            } else if (id === 'trigonometry') {
+                resizeTrigonometry();
             }
         }
 
@@ -369,11 +466,17 @@
         }
 
         function updateGeometryMesh(type) {
-            if (geomMesh) geomScene.remove(geomMesh);
+            if (geomMesh) {
+                geomScene.remove(geomMesh);
+                geomMesh.geometry.dispose();
+                geomMesh.material.dispose();
+            }
             let geom;
             if (type === 'cube') geom = new THREE.BoxGeometry(2, 2, 2);
             else if (type === 'sphere') geom = new THREE.SphereGeometry(1.5, 32, 32);
-            else geom = new THREE.ConeGeometry(1.5, 2.5, 4);
+            else if (type === 'pyramid') geom = new THREE.ConeGeometry(1.5, 2.5, 4);
+            else if (type === 'cone') geom = new THREE.ConeGeometry(1.4, 2.8, 48);
+            else if (type === 'cylinder') geom = new THREE.CylinderGeometry(1.2, 1.2, 2.8, 48);
             const mat = new THREE.MeshPhongMaterial({ color: 0x388e3c, wireframe: true });
             geomMesh = new THREE.Mesh(geom, mat);
             geomScene.add(geomMesh);
@@ -496,6 +599,8 @@
             if (type === 'rectangle') fields = [{ id: 'dimL', label: 'Largura', val: 5 }, { id: 'dimA', label: 'Altura', val: 3 }];
             else if (type === 'circle') fields = [{ id: 'dimR', label: 'Raio', val: 4 }];
             else if (type === 'triangle') fields = [{ id: 'dimB', label: 'Base', val: 4 }, { id: 'dimH', label: 'Altura', val: 3 }];
+            else if (type === 'trapezoid') fields = [{ id: 'dimB1', label: 'Base maior', val: 6 }, { id: 'dimB2', label: 'Base menor', val: 4 }, { id: 'dimH', label: 'Altura', val: 3 }];
+            else if (type === 'rhombus') fields = [{ id: 'dimD1', label: 'Diagonal maior', val: 6 }, { id: 'dimD2', label: 'Diagonal menor', val: 4 }];
 
             for (let i = 0; i < fields.length; i = i + 1) {
                 const item = fields[i];
@@ -555,10 +660,100 @@
                 ctx.lineTo(startX, startY - drawH);
                 ctx.closePath();
                 ctx.stroke();
+            } else if (type === 'trapezoid') {
+                const b1 = getVal('dimB1');
+                const b2 = getVal('dimB2');
+                const h = getVal('dimH');
+                const difference = Math.abs(b1 - b2);
+                const leg = Math.sqrt(Math.pow(h, 2) + Math.pow(difference / 2, 2));
+                area = ((b1 + b2) * h) / 2;
+                perim = b1 + b2 + 2 * leg;
+
+
+                const scale = Math.min((canvas.width * 0.6) / Math.max(b1, b2), (canvas.height * 0.6) / h);
+                const drawB1 = b1 * scale;
+                const drawB2 = b2 * scale;
+                const drawH = h * scale;
+                const startX = (canvas.width - drawB1) / 2;
+                const startY = (canvas.height + drawH) / 2;
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX + drawB1, startY);
+                ctx.lineTo(startX + (drawB1 + drawB2) / 2, startY - drawH);
+                ctx.lineTo(startX + (drawB1 - drawB2) / 2, startY - drawH);
+                ctx.closePath();
+                ctx.stroke();
+
+            }else if (type === 'rhombus') {
+                const d1 = getVal('dimD1');
+                const d2 = getVal('dimD2');
+                area = (d1 * d2) / 2;
+                const side = Math.sqrt(Math.pow(d1 / 2, 2) + Math.pow(d2 / 2, 2));
+                perim = 4 * side;
+
+                const scale = Math.min((canvas.width * 0.6) / d1, (canvas.height * 0.6) / d2);
+                const drawD1 = d1 * scale;
+                const drawD2 = d2 * scale;
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - drawD2 / 2);
+                ctx.lineTo(centerX + drawD1 / 2, centerY);
+                ctx.lineTo(centerX, centerY + drawD2 / 2);
+                ctx.lineTo(centerX - drawD1 / 2, centerY);
+                ctx.closePath();
+                ctx.stroke();
             }
 
             document.getElementById('result2dArea').innerText = "Área: " + area.toFixed(2);
             document.getElementById('result2dPerim').innerText = "Perímetro / Circunferência: " + perim.toFixed(2);
+        }
+
+        function resizeTrigonometry() {
+            const canvas = document.getElementById('trigCanvas');
+            const width = canvas.parentElement.clientWidth > 600 ? 600 : Math.max(300, canvas.parentElement.clientWidth);
+            canvas.width = width;
+            canvas.height = 380;
+            updateTrigonometry();
+        }
+
+        function updateTrigonometryFromRange() {
+            document.getElementById('trigAngle').value = document.getElementById('trigAngleRange').value;
+            updateTrigonometry();
+        }
+
+        function updateTrigonometry() {
+            const angleInput = document.getElementById('trigAngle');
+            const angle = Math.max(0, Math.min(360, parseFloat(angleInput.value) || 0));
+            angleInput.value = angle;
+            document.getElementById('trigAngleRange').value = angle;
+            document.getElementById('trigAngleValue').textContent = angle.toFixed(0) + '°';
+
+            const radians = angle * Math.PI / 180;
+            const sine = Math.sin(radians);
+            const cosine = Math.cos(radians);
+            const tangent = Math.abs(cosine) < 0.000001 ? 'indefinida' : Math.tan(radians).toFixed(4);
+            document.getElementById('trigRadians').textContent = 'Radianos: ' + radians.toFixed(4);
+            document.getElementById('trigSin').textContent = 'sen(θ): ' + sine.toFixed(4);
+            document.getElementById('trigCos').textContent = 'cos(θ): ' + cosine.toFixed(4);
+            document.getElementById('trigTan').textContent = 'tan(θ): ' + tangent;
+
+            const canvas = document.getElementById('trigCanvas');
+            if (!canvas.width) { canvas.width = 600; canvas.height = 380; }
+            const ctx = canvas.getContext('2d');
+            const cx = canvas.width / 2, cy = canvas.height / 2, radius = Math.min(canvas.width, canvas.height) * 0.34;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0d0f0d'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#555'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx - radius - 25, cy); ctx.lineTo(cx + radius + 25, cy); ctx.moveTo(cx, cy - radius - 25); ctx.lineTo(cx, cy + radius + 25); ctx.stroke();
+            ctx.strokeStyle = '#4caf50'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.stroke();
+            const px = cx + cosine * radius, py = cy - sine * radius;
+            ctx.strokeStyle = '#81c784'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#a5d6a7'; ctx.font = '14px Segoe UI'; ctx.fillText('1', cx + radius + 8, cy - 8); ctx.fillText('sen', px + 8, cy - (cy - py) / 2);
+            ctx.fillText('cos', cx + (px - cx) / 2 - 12, cy + 20);
         }
 
         function runCalculus() {
@@ -608,11 +803,176 @@
             statsChart.update();
         }
 
+        function updateNumberTheoryInputs() {
+            const type = document.getElementById('numberTheoryType').value;
+            const container = document.getElementById('numberTheoryInputs');
+            container.innerHTML = '';
+            let fields = [];
+
+            if (type === 'fibonacci') {
+                fields = [{ id: 'ntN', label: 'Quantidade de termos', val: 10, max: 500 }];
+            } else if (type === 'mmc') {
+                fields = [{ id: 'ntA', label: 'Número 1', val: 0 }, { id: 'ntB', label: 'Número 2', val: 0 }];
+            } else if (type === 'mdc') {
+                fields = [{ id: 'ntA', label: 'Número 1', val: 0 }, { id: 'ntB', label: 'Número 2', val: 0 }];
+            } else {
+                fields = [{ id: 'ntLimit', label: 'Limite superior', val: 50, max: 500 }];
+            }
+
+            for (let i = 0; i < fields.length; i = i + 1) {
+                const item = fields[i];
+                const div = document.createElement('div');
+                div.innerHTML = '<label>' + item.label + '</label><input type="number" id="' + item.id + '" value="' + item.val + '" min="0"' + (item.max ? ' max="' + item.max + '"' : '') + ' style="width: 150px;">';
+                container.appendChild(div);
+            }
+        }
+
+        function calculateNumberTheory() {
+            const type = document.getElementById('numberTheoryType').value;
+            const result = document.getElementById('numberTheoryResult');
+            const value = (id) => parseInt(document.getElementById(id).value, 10);
+            let output = '';
+
+            if (type === 'fibonacci') {
+                const n = Math.max(0, Math.min(500, value('ntN') || 0));
+                const sequence = [];
+                let a = 0, b = 1;
+                for (let i = 0; i < n; i = i + 1) {
+                    sequence.push(a);
+                    const next = a + b;
+                    a = b;
+                    b = next;
+                }
+                output = 'Fibonacci (' + n + ' termos):\n' + sequence.join(', ');
+            } else if (type === 'mdc' || type === 'mmc') {
+                const originalA = value('ntA') || 0;
+                const originalB = value('ntB') || 0;
+                let a = Math.abs(originalA), b = Math.abs(originalB);
+                while (b !== 0) {
+                    const remainder = a % b;
+                    a = b;
+                    b = remainder;
+                }
+                const mdc = a;
+                const mmc = mdc === 0 ? 0 : Math.abs(originalA * originalB) / mdc;
+                output = (type === 'mdc' ? 'MDC(' : 'MMC(') + originalA + ', ' + originalB + ') = ' + (type === 'mdc' ? mdc : mmc);
+            } else {
+                const limit = Math.max(2, Math.min(500, value('ntLimit') || 2));
+                const primes = [];
+                for (let number = 2; number <= limit; number = number + 1) {
+                    let prime = true;
+                    for (let divisor = 2; divisor * divisor <= number; divisor = divisor + 1) {
+                        if (number % divisor === 0) { prime = false; break; }
+                    }
+                    if (prime) primes.push(number);
+                }
+                output = 'Primos até ' + limit + ':\n' + primes.join(', ');
+            }
+            result.textContent = output;
+        }
+
+        function getMatrixSize() {
+            return {
+                rows: Math.max(1, Math.min(6, parseInt(document.getElementById('matrixRows').value) || 2)),
+                cols: Math.max(1, Math.min(6, parseInt(document.getElementById('matrixCols').value) || 2))
+            };
+        }
+
+        function buildMatrixInputs(prefix, rows, cols) {
+            prefix = prefix || 'matrixA';
+            const size = getMatrixSize();
+            rows = rows || size.rows;
+            cols = cols || size.cols;
+            const container = document.getElementById(prefix === 'matrixA' ? 'matrixInputs' : 'secondMatrixInputs');
+            container.innerHTML = '';
+            container.style.gridTemplateColumns = 'repeat(' + cols + ', 70px)';
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number'; input.value = '0'; input.id = prefix + '-' + i + '-' + j;
+                    container.appendChild(input);
+                }
+            }
+        }
+
+        function readMatrix(prefix, rows, cols) {
+            const matrix = [];
+            for (let i = 0; i < rows; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < cols; j++) matrix[i][j] = parseFloat(document.getElementById(prefix + '-' + i + '-' + j).value) || 0;
+            }
+            return matrix;
+        }
+
+        function formatMatrix(matrix) {
+            return matrix.map(row => '[ ' + row.map(value => Number(value.toFixed(4))).join('   ') + ' ]').join('\n');
+        }
+
+        function showMatrix() {
+            const size = getMatrixSize();
+            document.getElementById('matrixResult').textContent = 'Matriz A:\n' + formatMatrix(readMatrix('matrixA', size.rows, size.cols));
+        }
+
+        function updateSecondMatrix() {
+            const operation = document.getElementById('matrixOperation').value;
+            const container = document.getElementById('secondMatrixInputs');
+            const sizeControls = document.getElementById('secondMatrixSize');
+            const size = getMatrixSize();
+            const visible = operation === 'add' || operation === 'subtract' || operation === 'multiply';
+            sizeControls.style.display = visible ? 'flex' : 'none';
+            container.style.display = visible ? 'grid' : 'none';
+            if (visible) {
+                const rowsInput = document.getElementById('matrixBRows');
+                const colsInput = document.getElementById('matrixBCols');
+                if (rowsInput.dataset.operation !== operation) {
+                    rowsInput.value = operation === 'multiply' ? size.cols : size.rows;
+                    colsInput.value = operation === 'multiply' ? size.rows : size.cols;
+                    rowsInput.dataset.operation = operation;
+                }
+                const rows = Math.max(1, Math.min(6, parseInt(rowsInput.value) || 1));
+                const cols = Math.max(1, Math.min(6, parseInt(colsInput.value) || 1));
+                rowsInput.value = rows;
+                colsInput.value = cols;
+                buildMatrixInputs('matrixB', rows, cols);
+            }
+        }
+
+        function calculateMatrixOperation() {
+            const size = getMatrixSize();
+            const operation = document.getElementById('matrixOperation').value;
+            const a = readMatrix('matrixA', size.rows, size.cols);
+            let result = a;
+            if (operation === 'transpose') result = a[0].map((_, j) => a.map(row => row[j]));
+            else if (operation === 'add' || operation === 'subtract') {
+                const bRows = parseInt(document.getElementById('matrixBRows').value);
+                const bCols = parseInt(document.getElementById('matrixBCols').value);
+                if (bRows !== size.rows || bCols !== size.cols) {
+                    document.getElementById('matrixResult').textContent = 'Para somar ou subtrair, B deve ter o mesmo tamanho de A.';
+                    return;
+                }
+                const b = readMatrix('matrixB', bRows, bCols);
+                result = a.map((row, i) => row.map((value, j) => operation === 'add' ? value + b[i][j] : value - b[i][j]));
+            } else if (operation === 'multiply') {
+                const bRows = parseInt(document.getElementById('matrixBRows').value);
+                const bCols = parseInt(document.getElementById('matrixBCols').value);
+                if (bRows !== size.cols) {
+                    document.getElementById('matrixResult').textContent = 'Para multiplicar, as linhas de B devem ser iguais às colunas de A.';
+                    return;
+                }
+                const b = readMatrix('matrixB', bRows, bCols);
+                result = a.map(row => b[0].map((_, j) => row.reduce((sum, value, k) => sum + value * b[k][j], 0)));
+            }
+            document.getElementById('matrixResult').textContent = 'Resultado:\n' + formatMatrix(result);
+        }
+
         window.onload = function() {
             initFunctionPlot();
             updateGeometry2D();
             runCalculus();
             initStats();
+            updateNumberTheoryInputs();
+            buildMatrixInputs();
+            resizeTrigonometry();
         };
     </script>
 </body>

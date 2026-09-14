@@ -25,6 +25,6 @@
 
 ## Developer
 
-Developed by **David Carlos Miranda Delgado**  
+Developed by **David Carlos Miranda Delgado** and **Cauê Leonardo da Silva Shishido**
 4th Period student of the Information Technology / Computer Science program  
 **IFSULDEMINAS – Campus Poços de Caldas**

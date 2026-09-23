@@ -540,6 +540,8 @@
 
             hyperInitialized = true;
 
+            // loucura total
+
             const animate4D = () => {
                 requestAnimationFrame(animate4D);
                 const rx = parseFloat(document.getElementById('rotXW').value);
@@ -964,7 +966,6 @@
             }
             document.getElementById('matrixResult').textContent = 'Resultado:\n' + formatMatrix(result);
         }
-
         window.onload = function() {
             initFunctionPlot();
             updateGeometry2D();
